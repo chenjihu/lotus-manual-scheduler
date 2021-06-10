@@ -127,3 +127,112 @@ if task.taskType != sealtasks.TTFetch && !WorkerHasLayoutAccess(task, windowRequ
 ## Add sched_layout.go file
 There is only one file with all the logic implemented. You must place it in the `/extern/sector-storage/` directory.
 You can download it from [forked version](https://github.com/Ja7ad/lotus/blob/master/extern/sector-storage/sched_layout.go) or from this repository [this repository](./files/sched_layout.go).
+
+<br /><br />
+
+# Configuration example
+
+Clearly, this is a very simple configuration.Our intention is just to show how different servers can work together, maybe the manner in which we separated tasks isn't meaningful.
+
+```json
+{
+  "checkLayout": true,
+  "loadConfigFilePerMinute": 1,
+  "groups": [
+    {
+      "serverName": "ServerA",
+      "workers": [
+        {
+          "workerId": "W1"
+        },
+        {
+          "workerId": "W2"
+        }
+      ],
+      "sectors": [
+        {
+          "sectorId": "2",
+          "allowLocalFullControl": false,
+          "remoteServers": [
+            {
+              "serverName": "ServerB",
+              "allowedTasks": "C2"
+            }
+          ]
+        },
+        {
+          "sectorId": "1",
+          "allowLocalFullControl": false,
+          "remoteServers": [
+            {
+              "serverName": "ServerC",
+              "allowedTasks": "*"
+            },
+            {
+              "serverName": "ServerB",
+              "allowedTasks": "*"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "serverName": "ServerB",
+      "workers": [
+        {
+          "workerId": "W3"
+        }
+      ],
+      "sectors": [
+        {
+          "sectorId": "8",
+          "allowLocalFullControl": true,
+          "remoteServers": [
+            {
+              "serverName": "ServerA",
+              "allowedTasks": "PC1,PC2"
+            }
+          ]
+        },
+        {
+          "sectorId": "7",
+          "allowLocalFullControl": true,
+          "remoteServers": [
+            {
+              "serverName": "ServerC",
+              "allowedTasks": "C2"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "serverName": "ServerC",
+      "workers": [
+        {
+          "workerId": "W4"
+        },
+        {
+          "workerId": "W5"
+        },
+        {
+          "workerId": "W6"
+        }
+      ],
+      "sectors": [
+        {
+          "sectorId": "5",
+          "allowLocalFullControl": false,
+          "remoteServers": [
+            {
+              "serverName": "ServerB",
+              "allowedTasks": "*"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
+```
+![workflow image](./workflows/scheduler_layout_sample.jpg)
